@@ -1,0 +1,18 @@
+C:\Users\palad\source\repos\DemineurModeConsole\DemineurModeConsole\obj\Debug\net8.0\DemineurModeConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\palad\source\repos\DemineurModeConsole\DemineurModeConsole\obj\Debug\net8.0\DemineurModeConsole.AssemblyInfoInputs.cache
+C:\Users\palad\source\repos\DemineurModeConsole\DemineurModeConsole\obj\Debug\net8.0\DemineurModeConsole.AssemblyInfo.cs
+C:\Users\palad\source\repos\DemineurModeConsole\DemineurModeConsole\obj\Debug\net8.0\DemineurModeConsole.csproj.CoreCompileInputs.cache
+C:\Users\palad\Desktop\Demineur\Demineur Console\bin\Debug\net8.0\DemineurModeConsole.exe
+C:\Users\palad\Desktop\Demineur\Demineur Console\bin\Debug\net8.0\DemineurModeConsole.deps.json
+C:\Users\palad\Desktop\Demineur\Demineur Console\bin\Debug\net8.0\DemineurModeConsole.runtimeconfig.json
+C:\Users\palad\Desktop\Demineur\Demineur Console\bin\Debug\net8.0\DemineurModeConsole.dll
+C:\Users\palad\Desktop\Demineur\Demineur Console\bin\Debug\net8.0\DemineurModeConsole.pdb
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\DemineurModeConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\DemineurModeConsole.AssemblyInfoInputs.cache
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\DemineurModeConsole.AssemblyInfo.cs
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\DemineurModeConsole.csproj.CoreCompileInputs.cache
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\DemineurModeConsole.dll
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\refint\DemineurModeConsole.dll
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\DemineurModeConsole.pdb
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\DemineurModeConsole.genruntimeconfig.cache
+C:\Users\palad\Desktop\Demineur\Demineur Console\obj\Debug\net8.0\ref\DemineurModeConsole.dll
