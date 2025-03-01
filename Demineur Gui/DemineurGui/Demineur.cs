@@ -130,17 +130,18 @@ namespace Demineur
             }
             else if (difficulty == 2)
             {
-                TailleXTableau = 16; //Nombre de lignes
-                TailleYTableau = 32; //Nombre de colonnes
+                TailleXTableau = 32; //Nombre de lignes
+                TailleYTableau = 16; //Nombre de colonnes
                 NbBombeTot = 99;
             }
             NbBombeRestante = NbBombeTot;
+
+            TableauJeuHide = new int[TailleYTableau, TailleXTableau];
+            TableauJeuShow = new char[TailleYTableau, TailleXTableau];
         }
         public void InitialiserJeu(int PosDepartX = 4, int PosDepartY = 3)
         {
 
-            TableauJeuHide = new int[TailleYTableau, TailleXTableau];
-            TableauJeuShow = new char[TailleYTableau, TailleXTableau];
             Debug.WriteLine("Jeu initialisé");
 
             int nbBombe = NbBombeTot;

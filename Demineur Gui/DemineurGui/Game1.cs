@@ -12,6 +12,9 @@ using SharpDX.MediaFoundation;
 using System.Diagnostics;
 using System.Collections;
 using System.Threading;
+using System.Drawing;
+using Color = Microsoft.Xna.Framework.Color;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 
 namespace DemineurGui
@@ -55,6 +58,9 @@ namespace DemineurGui
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            graphics.PreferredBackBufferWidth = 900; // Largeur
+            graphics.PreferredBackBufferHeight = 500; // Hauteur
+            graphics.ApplyChanges();
         }
 
         protected override void Initialize()
@@ -95,7 +101,6 @@ namespace DemineurGui
                     Debug.WriteLine("Recommencé");
                     demineur = new Bombe(Difficulte);
                     PremierClick = false;
-                    demineur.TableauShow();
                     demineur.ResetTableauShow();
                 }
             }
@@ -103,6 +108,36 @@ namespace DemineurGui
             {
                 VisageClique = false;
             }
+
+            if ((mouseState.LeftButton == ButtonState.Pressed || previousMouseState.LeftButton == ButtonState.Pressed) && destinationRectangleDifficulte.Contains(mouseState.Position))
+            {
+                DifficulteClique = true;
+                if (mouseState.LeftButton == ButtonState.Released)
+                {
+                    if (threadCompteur.IsAlive)
+                    {
+                        cts.Cancel();
+                        threadCompteur.Join();
+                        tileRectangles.Clear();
+                    }
+
+                    Difficulte += 1;
+                    Difficulte = Difficulte % 3;
+                    
+
+                    tileRectangles.Clear();
+                    demineur = null;
+                    Debug.WriteLine("Recommencé");
+                    demineur = new Bombe(Difficulte);
+                    PremierClick = false;
+                    demineur.ResetTableauShow();
+                }
+            }
+            else
+            {
+                DifficulteClique = false;
+            }
+
 
             if (previousMouseState.LeftButton == ButtonState.Pressed || mouseState.LeftButton == ButtonState.Pressed )
             { 
@@ -331,19 +366,25 @@ namespace DemineurGui
                 spriteTuile.Draw(visageTexture, destinationRectangleVisage, sourceRectangle, Color.White);
             }
 
+            Debug.WriteLine(Difficulte);
+
             if (DifficulteClique)
             {
+                int indice = Difficulte % 3 * 2 +1;
+                Debug.WriteLine("Diff: " + indice);
 
-                Rectangle sourceRectangleDifficulte = new Rectangle(26 * (Difficulte + 1), 0, 26, 26);
-                destinationRectangleDifficulte = new Rectangle(150, 0, 26 * scale, 26 * scale);
-                spriteTuile.Draw(niveauTexture, destinationRectangleVisage, sourceRectangleDifficulte, Color.White);
+                Rectangle sourceRectangleDifficulte = new Rectangle(26 * indice, 0, 26, 26);
+                destinationRectangleDifficulte = new Rectangle(250, 0, 26 * scale, 26 * scale);
+                spriteTuile.Draw(niveauTexture, destinationRectangleDifficulte, sourceRectangleDifficulte, Color.White);
             }
             else
             {
 
-                Rectangle sourceRectangleDifficulte = new Rectangle(26 * Difficulte, 0, 26, 26);
-                destinationRectangleDifficulte = new Rectangle(150, 0, 26 * scale, 26 * scale);
-                spriteTuile.Draw(niveauTexture, destinationRectangleVisage, sourceRectangleDifficulte, Color.White);
+                int indice = Difficulte % 3 * 2;
+                Debug.WriteLine("Diff: " + indice);
+                Rectangle sourceRectangleDifficulte = new Rectangle(26 * indice, 0, 26, 26);
+                destinationRectangleDifficulte = new Rectangle(250, 0, 26 * scale, 26 * scale);
+                spriteTuile.Draw(niveauTexture, destinationRectangleDifficulte, sourceRectangleDifficulte, Color.White);
             }
 
 

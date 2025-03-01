@@ -40,3 +40,4 @@ C:\Users\palad\Desktop\Demineur\Demineur Gui\DemineurGui\bin\Debug\net6.0-window
 C:\Users\palad\Desktop\Demineur\Demineur Gui\DemineurGui\bin\Debug\net6.0-windows\Content\Chiffres.xnb
 C:\Users\palad\Desktop\Demineur\Demineur Gui\DemineurGui\bin\Debug\net6.0-windows\Content\Visages.xnb
 C:\Users\palad\Desktop\Demineur\Demineur Gui\DemineurGui\bin\Debug\net6.0-windows\Content\Niveaux.xnb
+C:\Users\palad\Desktop\Demineur\Demineur Gui\DemineurGui\obj\Debug\net6.0-windows\DemineurGui.sourcelink.json

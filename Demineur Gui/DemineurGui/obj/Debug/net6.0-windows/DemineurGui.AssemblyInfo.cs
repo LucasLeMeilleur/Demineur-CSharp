@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DemineurGui")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57104ad608e5319dc1e07d17926c09c4b05ad8fd")]
 [assembly: System.Reflection.AssemblyProductAttribute("DemineurGui")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DemineurGui")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
