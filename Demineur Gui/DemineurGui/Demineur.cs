@@ -5,6 +5,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 
 using System.Diagnostics;
+using System.Collections.Generic;
 
 
 namespace Demineur
@@ -54,7 +55,7 @@ namespace Demineur
             Console.WriteLine("Nombre de bombes restantes : " + demineur.NbDeBombe());
 
             demineur.AfficherTableauHide();
-            demineur.DevoilerLesCases();
+            demineur.DevoilerLesCases(1,1);
             demineur.AfficherTableauShow();
             demineur.ListerCmd();
 
@@ -157,8 +158,8 @@ namespace Demineur
             {
                 int ligne = rand.Next(TailleYTableau);
                 int colonne = rand.Next(TailleXTableau);
-                bool ConditionPos = VerifierCondition(ligne, colonne, PosDepartX, PosDepartY);
-                if (TableauJeuHide[ligne, colonne] != 10 && ConditionPos)
+                bool ConditionPos = EstProcheDeDepart(colonne, ligne, PosDepartX, PosDepartY);
+                if (TableauJeuHide[ligne, colonne] != 10 && !ConditionPos)
                 {
                     TableauJeuHide[ligne, colonne] = 10;
                     nbBombe--;
@@ -260,7 +261,7 @@ namespace Demineur
         {
             tableau[a, b] = tableau[a, b] != 10 ? tableau[a, b] + 1 : tableau[a, b];
         }
-        private bool VerifierCondition(int ligne, int colonne, int choixX, int choixY)
+        private bool VerifierCondition(int colonne, int ligne, int choixX, int choixY)
         {
             bool Condition = true;
 
@@ -278,47 +279,68 @@ namespace Demineur
             }
             return Condition;
         }
-        public void DevoilerLesCases()
-        {
-            for (int j = 0; j < TailleYTableau; j++) // On inverse les boucles
-            {
-                for (int i = 0; i < TailleXTableau; i++)
-                {
-                    if (TableauJeuHide[j, i] == 0) // On inverse aussi les accès au tableau
-                    {
-                        TableauJeuShow[j, i] = (char)('0' + TableauJeuHide[j, i]);
 
-                        if (i != 0)
+
+        private bool EstProcheDeDepart(int x, int y, int posDepartX, int posDepartY)
+        {
+            // On bloque les 8 cases autour + la case de départ
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    if (x == posDepartX + dx && y == posDepartY + dy)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public void DevoilerLesCases(int startX, int startY)
+        {
+            // Vérifier si les coordonnées sont valides
+            if (startX < 0 || startX >= TailleXTableau || startY < 0 || startY >= TailleYTableau)
+                return;
+
+            // Crée une pile pour gérer la propagation
+            Stack<(int, int)> casesAExplorer = new Stack<(int, int)>();
+            casesAExplorer.Push((startX, startY));
+
+            // Tableau pour suivre les cases déjà révélées
+            bool[,] casesVisitees = new bool[TailleYTableau, TailleXTableau];
+
+            while (casesAExplorer.Count > 0)
+            {
+                (int x, int y) = casesAExplorer.Pop();
+
+                // Vérifie si la case est déjà visitée
+                if (casesVisitees[y, x])
+                    continue;
+
+                // Marque la case comme visitée
+                casesVisitees[y, x] = true;
+
+                // Révéler la case actuelle
+                TableauJeuShow[y, x] = (char)('0' + TableauJeuHide[y, x]);
+
+                // Si c'est un zéro, on explore les cases adjacentes
+                if (TableauJeuHide[y, x] == 0)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        for (int dx = -1; dx <= 1; dx++)
                         {
-                            TableauJeuShow[j, i - 1] = (char)('0' + TableauJeuHide[j, i - 1]);
-                        }
-                        if (i != (TailleXTableau - 1))
-                        {
-                            TableauJeuShow[j, i + 1] = (char)('0' + TableauJeuHide[j, i + 1]);
-                        }
-                        if (j != 0)
-                        {
-                            TableauJeuShow[j - 1, i] = (char)('0' + TableauJeuHide[j - 1, i]);
-                        }
-                        if (j != (TailleYTableau - 1))
-                        {
-                            TableauJeuShow[j + 1, i] = (char)('0' + TableauJeuHide[j + 1, i]);
-                        }
-                        if (j != 0 && i != (TailleXTableau - 1))
-                        {
-                            TableauJeuShow[j - 1, i + 1] = (char)('0' + TableauJeuHide[j - 1, i + 1]);
-                        }
-                        if (j != (TailleYTableau - 1) && i != (TailleXTableau - 1))
-                        {
-                            TableauJeuShow[j + 1, i + 1] = (char)('0' + TableauJeuHide[j + 1, i + 1]);
-                        }
-                        if (j != (TailleYTableau - 1) && i != 0)
-                        {
-                            TableauJeuShow[j + 1, i - 1] = (char)('0' + TableauJeuHide[j + 1, i - 1]);
-                        }
-                        if (j != 0 && i != 0)
-                        {
-                            TableauJeuShow[j - 1, i - 1] = (char)('0' + TableauJeuHide[j - 1, i - 1]);
+                            if (dx == 0 && dy == 0)
+                                continue; // On saute la case centrale
+
+                            int nx = x + dx;
+                            int ny = y + dy;
+
+                            // Vérifie que la case est dans les limites du tableau
+                            if (nx >= 0 && nx < TailleXTableau && ny >= 0 && ny < TailleYTableau && !casesVisitees[ny, nx])
+                            {
+                                casesAExplorer.Push((nx, ny));
+                            }
                         }
                     }
                 }

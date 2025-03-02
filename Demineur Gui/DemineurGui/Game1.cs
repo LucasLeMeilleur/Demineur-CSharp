@@ -19,6 +19,24 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace DemineurGui
 {
+    public struct Point
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        // Constructeur pour initialiser x et y
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        // Méthode pour afficher les coordonnées
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
+        }
+    }
     public class Game1 : Game
     {
 
@@ -32,7 +50,7 @@ namespace DemineurGui
         Vector2 visagePosition;
         Vector2 niveauPosition;
         private MonoSpriteBatch spriteTuile;
-        private int Difficulte= 1;
+        private int Difficulte= 0;
 
         private Bombe demineur;
         private MouseState mouseState = Mouse.GetState();
@@ -52,6 +70,7 @@ namespace DemineurGui
         private CancellationTokenSource cts = new CancellationTokenSource();
         private bool PartieDemarre = false;
         private bool DifficulteClique=false;
+
         public Game1()
         {
             demineur = new Bombe(Difficulte);
@@ -59,7 +78,7 @@ namespace DemineurGui
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             graphics.PreferredBackBufferWidth = 900; // Largeur
-            graphics.PreferredBackBufferHeight = 500; // Hauteur
+            graphics.PreferredBackBufferHeight = 600; // Hauteur
             graphics.ApplyChanges();
         }
 
@@ -94,13 +113,14 @@ namespace DemineurGui
                     {
                         cts.Cancel();
                         threadCompteur.Join();
-                        tileRectangles.Clear();
                     }
                     tileRectangles.Clear();
+                    JeuInitialise = false;
+                    PremierClick = false;
                     demineur = null;
                     Debug.WriteLine("Recommencé");
                     demineur = new Bombe(Difficulte);
-                    PremierClick = false;
+                    PartieDemarre = false;
                     demineur.ResetTableauShow();
                 }
             }
@@ -118,18 +138,16 @@ namespace DemineurGui
                     {
                         cts.Cancel();
                         threadCompteur.Join();
-                        tileRectangles.Clear();
                     }
-
                     Difficulte += 1;
                     Difficulte = Difficulte % 3;
-                    
-
                     tileRectangles.Clear();
+                    JeuInitialise = false;
+                    PremierClick = false;
                     demineur = null;
                     Debug.WriteLine("Recommencé");
                     demineur = new Bombe(Difficulte);
-                    PremierClick = false;
+                    PartieDemarre = false;
                     demineur.ResetTableauShow();
                 }
             }
@@ -163,10 +181,12 @@ namespace DemineurGui
                                 tileRectangles.Clear();
                             }
 
+
+
+
                             tileRectangles.Clear();
-                            Debug.WriteLine(threadCompteur.IsAlive);
-                            demineur.InitialiserJeu(tuileX, tuileY);
-                            demineur.DevoilerLesCases();
+                            demineur.InitialiserJeu(tuileY, tuileX);
+                            demineur.DevoilerLesCases(tuileY, tuileX);
                             PremierClick = true;
                             JeuInitialise = true;
 
@@ -174,19 +194,22 @@ namespace DemineurGui
                             threadCompteur.Start();
                             Debug.WriteLine("Intialisé");
                             PartieDemarre = true;
+                            Debug.WriteLine(tuileY + " " + tuileX);
                         }
                         else
                         {
-                            demineur.DecouvrirUneCase(tuileX, tuileY);
+                            demineur.DecouvrirUneCase(tuileY, tuileX);
 
+                            if (demineur.DonnerTableauHide(tuileY, tuileX) == 10)
+                            {
+                                demineur.RevelerLesBombes();
+                                Perdu = true;
+                            }
+                            Debug.WriteLine("Valeur pour " + tuileY + ", " + tuileX + " : " + demineur.DonnerTableauHide(tuileY, tuileX));
+
+                            demineur.TableauShow();
                         }
 
-                        if (demineur.DonnerTableauHide(tuileX, tuileY) == 10)
-                        {
-                            demineur.RevelerLesBombes();
-                            Perdu = true;
-                        }
-                        Debug.WriteLine("Valeur pour " + tuileY + ", " + tuileX + " : " + demineur.DonnerTableauHide(tuileX, tuileY));
                     }
                 }
             }
@@ -253,6 +276,13 @@ namespace DemineurGui
             int scale = 5;
             int NumTuile = 0;
 
+
+            Point positionTuile = new Point(50, 50);
+            Point positionBombes = new Point(0, 0);
+            Point positionTemps = new Point(200, 0);
+            Point positionVisage = new Point(80, 0);
+            Point positionDifficulte = new Point(250, 0);
+
             spriteTuile.Begin();
 
             tileRectangles.Clear(); // On nettoie la liste avant de la remplir
@@ -265,19 +295,21 @@ namespace DemineurGui
                     {
                         int nombre = 0;
                         /////////////////////////// Dessiner Tableau Hide ///////////////////////////
-                        nombre = demineur.DonnerTableauHide(i, j);
+                        
+                        nombre = demineur.DonnerTableauHide(j, i);
+                       
                         if (nombre == 10)
                         {
                             nombre = 2;
                         }
                         else nombre += 3;
                         Rectangle sourceRecHide = new Rectangle(128 * nombre, 0, 128, 128);
-                        Rectangle destRecHide = new Rectangle(50 + (128 / scale) * i,
-                                                                       50 + (128 / scale) * j,
-                                                                       128 / scale, 128 / scale);
+                        Rectangle destRecHide = new Rectangle(positionTuile.X + (128 / scale) * i,
+                                                              positionTuile.Y + (128 / scale) * j,
+                                                              128 / scale, 128 / scale);
                         spriteTuile.Draw(tileTexture, destRecHide, sourceRecHide, Color.White);
 
-                        if (demineur.DonnerTableauShow(i, j) == 'X')
+                        if (demineur.DonnerTableauShow(j, i) == 'X')
                         {
                             int ValueTile;
                             if ((tuileMaintenu[0] == i) && (tuileMaintenu[1] == j))
@@ -290,16 +322,16 @@ namespace DemineurGui
                             }
                             /////////////////////////// Desinner Tableau Show ///////////////////////////
                             Rectangle sourceRectangle = new Rectangle(128 * ValueTile, 0, 128, 128);
-                            Rectangle destinationRectangle = new Rectangle(50 + (128 / scale) * i,
-                                                                           50 + (128 / scale) * j,
+                            Rectangle destinationRectangle = new Rectangle(positionTuile.X + (128 / scale) * i,
+                                                                           positionTuile.Y + (128 / scale) * j,
                                                                            128 / scale, 128 / scale);
                             spriteTuile.Draw(tileTexture, destinationRectangle, sourceRectangle, Color.White);
                             tileRectangles.Add(destinationRectangle);
-                        }else if(demineur.DonnerTableauShow(i, j) == 'F')
+                        }else if(demineur.DonnerTableauShow(j, i) == 'F')
                         {
                             Rectangle sourceRectangle = new Rectangle(128 * 1, 0, 128, 128);
-                            Rectangle destinationRectangle = new Rectangle(50 + (128 / scale) * i,
-                                                                           50 + (128 / scale) * j,
+                            Rectangle destinationRectangle = new Rectangle(positionTuile.X + (128 / scale) * i,
+                                                                           positionTuile.Y + (128 / scale) * j,
                                                                            128 / scale, 128 / scale);
                             spriteTuile.Draw(tileTexture, destinationRectangle, sourceRectangle, Color.White);
                             tileRectangles.Add(destinationRectangle);
@@ -308,8 +340,8 @@ namespace DemineurGui
                     else
                     {
                             Rectangle sourceRectangle = new Rectangle(128 * NumTuile, 0, 128, 128);
-                            Rectangle destinationRectangle = new Rectangle(50 + (128 / scale) * i,
-                                                                           50 + (128 / scale) * j,
+                            Rectangle destinationRectangle = new Rectangle(positionTuile.X + (128 / scale) * i,
+                                                                           positionTuile.Y + (128 / scale) * j,
                                                                            128 / scale, 128 / scale);
                             spriteTuile.Draw(tileTexture, destinationRectangle, sourceRectangle, Color.White);
                             tileRectangles.Add(destinationRectangle);
@@ -326,7 +358,7 @@ namespace DemineurGui
                 int valeur = int.Parse(BombeRestante[i].ToString());
 
                 Rectangle sourceRectangle = new Rectangle(13 * valeur, 0, 13, 23);
-                Rectangle destinationRectangle = new Rectangle(13*scale*i, 0 , 13 * scale , 23 * scale);
+                Rectangle destinationRectangle = new Rectangle(positionBombes.X + 13*scale*i, positionBombes.Y , 13 * scale , 23 * scale);
                 spriteTuile.Draw(chiffresTexture, destinationRectangle, sourceRectangle, Color.White);
             }
 
@@ -336,54 +368,52 @@ namespace DemineurGui
             {
                 int valeur = int.Parse(TempPassee[i].ToString());
                 Rectangle sourceRectangle = new Rectangle(13 * valeur, 0, 13, 23);
-                Rectangle destinationRectangle = new Rectangle(200 + 13 * scale * i, 0 , 13 * scale , 23 * scale);
+                Rectangle destinationRectangle = new Rectangle(positionTemps.X + 13 * scale * i, positionTemps.Y , 13 * scale , 23 * scale);
                 spriteTuile.Draw(chiffresTexture, destinationRectangle, sourceRectangle, Color.White);
             }
 
             scale = 1;
+            
+            
             if (Perdu)
             {
                 Rectangle sourceRectangle = new Rectangle(26 * 2, 0, 26, 26);
-                destinationRectangleVisage = new Rectangle(80, 0, 26 * scale, 26 * scale);
+                destinationRectangleVisage = new Rectangle(positionVisage.X, positionVisage.Y, 26 * scale, 26 * scale);
                 spriteTuile.Draw(visageTexture, destinationRectangleVisage, sourceRectangle, Color.White);
             }
             else if (ClicDroit)
             {
                 Rectangle sourceRectangle = new Rectangle(26 * 1, 0, 26, 26);
-                destinationRectangleVisage = new Rectangle(80, 0, 26 * scale, 26 * scale);
+                destinationRectangleVisage = new Rectangle(positionVisage.X, positionVisage.Y, 26 * scale, 26 * scale);
                 spriteTuile.Draw(visageTexture, destinationRectangleVisage, sourceRectangle, Color.White);
             }
             else if (VisageClique)
             {
                 Rectangle sourceRectangle = new Rectangle(26 * 3, 0, 26, 26);
-                destinationRectangleVisage = new Rectangle(80, 0, 26 * scale, 26 * scale);
+                destinationRectangleVisage = new Rectangle(positionVisage.X, positionVisage.Y, 26 * scale, 26 * scale);
                 spriteTuile.Draw(visageTexture, destinationRectangleVisage, sourceRectangle, Color.White);
             }
             else
             {
                 Rectangle sourceRectangle = new Rectangle(0, 0, 26, 26);
-                destinationRectangleVisage = new Rectangle(80, 0, 26 * scale, 26 * scale);
+                destinationRectangleVisage = new Rectangle(positionVisage.X, positionVisage.Y, 26 * scale, 26 * scale);
                 spriteTuile.Draw(visageTexture, destinationRectangleVisage, sourceRectangle, Color.White);
             }
-
-            Debug.WriteLine(Difficulte);
 
             if (DifficulteClique)
             {
                 int indice = Difficulte % 3 * 2 +1;
-                Debug.WriteLine("Diff: " + indice);
 
                 Rectangle sourceRectangleDifficulte = new Rectangle(26 * indice, 0, 26, 26);
-                destinationRectangleDifficulte = new Rectangle(250, 0, 26 * scale, 26 * scale);
+                destinationRectangleDifficulte = new Rectangle(positionDifficulte.X, positionDifficulte.Y, 26 * scale, 26 * scale);
                 spriteTuile.Draw(niveauTexture, destinationRectangleDifficulte, sourceRectangleDifficulte, Color.White);
             }
             else
             {
 
                 int indice = Difficulte % 3 * 2;
-                Debug.WriteLine("Diff: " + indice);
                 Rectangle sourceRectangleDifficulte = new Rectangle(26 * indice, 0, 26, 26);
-                destinationRectangleDifficulte = new Rectangle(250, 0, 26 * scale, 26 * scale);
+                destinationRectangleDifficulte = new Rectangle(positionDifficulte.X, positionDifficulte.Y, 26 * scale, 26 * scale);
                 spriteTuile.Draw(niveauTexture, destinationRectangleDifficulte, sourceRectangleDifficulte, Color.White);
             }
 
